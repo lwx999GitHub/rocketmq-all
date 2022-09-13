@@ -18,6 +18,7 @@ package org.apache.rocketmq.example.quickstart;
 
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
@@ -25,7 +26,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 /**
  * This class demonstrates how to send messages to brokers using provided {@link DefaultMQProducer}.
  */
-public class Producer {
+public class AsyncProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
         /*
@@ -51,7 +52,8 @@ public class Producer {
          */
         producer.start();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i <10; i++) {
+            final int index=i;
             try {
 
                 /*
@@ -65,9 +67,19 @@ public class Producer {
                 /*
                  * Call send message to deliver message to one of brokers.
                  */
-                SendResult sendResult = producer.send(msg);
+                producer.send(msg, new SendCallback() {
+                    @Override
+                    public void onSuccess(SendResult sendResult) {
+                        System.out.printf("%s%n",sendResult);
+                    }
 
-                System.out.printf("%s%n", sendResult);
+                    @Override
+                    public void onException(Throwable e) {
+                        System.out.printf("%-10d Exception %s %n",index,e);
+                    }
+                });
+
+                //System.out.printf("%s%n", sendResult);
             } catch (Exception e) {
                 e.printStackTrace();
                 Thread.sleep(1000);
@@ -77,6 +89,7 @@ public class Producer {
         /*
          * Shut down once the producer instance is not longer in use.
          */
+        Thread.sleep(90000);
         producer.shutdown();
     }
 }
