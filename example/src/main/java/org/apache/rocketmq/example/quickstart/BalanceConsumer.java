@@ -62,7 +62,8 @@ public class BalanceConsumer {
          * Subscribe one more more topics to consume.
          */
         consumer.subscribe("TopicTest", "*");
-        consumer.setMessageModel(MessageModel.CLUSTERING);
+        //consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setMessageModel(MessageModel.BROADCASTING);
 
         /*
          *  Register callback to execute on arrival of messages fetched from brokers.
