@@ -21,6 +21,7 @@ import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 
+import java.text.SimpleDateFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,14 +32,20 @@ public class TransactionListenerImpl implements TransactionListener {
 
     @Override
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-        int value = transactionIndex.getAndIncrement();
+/*        int value = transactionIndex.getAndIncrement();
         int status = value % 3;
-        localTrans.put(msg.getTransactionId(), status);
+        localTrans.put(msg.getTransactionId(), status);*/
+        //执行本地事务 UPDATE A...
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("update B ... WHERE transactionId:"+msg.getTransactionId());
+        //System.out.println("commit");
+        System.out.println("UNKNOW");
         return LocalTransactionState.UNKNOW;
     }
 
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt msg) {
+        System.out.println("========checkLocalTransaction==========");
         Integer status = localTrans.get(msg.getTransactionId());
         if (null != status) {
             switch (status) {

@@ -16,7 +16,6 @@
  */
 package org.apache.rocketmq.example.quickstart;
 
-import java.util.List;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -25,10 +24,12 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 
+import java.util.List;
+
 /**
  * This example shows how to subscribe and consume messages using providing {@link DefaultMQPushConsumer}.
  */
-public class Consumer {
+public class TagFilterConsumer {
 
     public static void main(String[] args) throws InterruptedException, MQClientException {
 
@@ -58,7 +59,7 @@ public class Consumer {
         /*
          * Subscribe one more more topics to consume.
          */
-        consumer.subscribe("TopicTest", "*");
+        consumer.subscribe("TopicTest", "TagA || TagB");
 
         /*
          *  Register callback to execute on arrival of messages fetched from brokers.
@@ -68,7 +69,7 @@ public class Consumer {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
                 ConsumeConcurrentlyContext context) {
                 for(MessageExt message:msgs){
-                    System.out.println("Receive message[msgId="+message.getQueueId()+"]"+(message.getStoreTimestamp()-message.getBornTimestamp())+"ms later");
+                    System.out.println("Receive message[msgId="+message.getQueueId()+"]"+(message.getStoreTimestamp()-message.getBornTimestamp())+"ms later,"+new String(message.getBody()));
                 }
                 //System.out.printf("%s Receive New Messages: %s %n", Thread.currentThread().getName(), msgs);
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

@@ -25,7 +25,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 /**
  * This class demonstrates how to send messages to brokers using provided {@link DefaultMQProducer}.
  */
-public class SyncProducer {
+public class ScheduledMessageProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
         /*
@@ -34,7 +34,6 @@ public class SyncProducer {
         DefaultMQProducer producer = new DefaultMQProducer("please_rename_unique_group_name");
 
         producer.setNamesrvAddr("127.0.0.1:9876");
-        producer.setSendMsgTimeout(15000);
         /*
          * Specify name server addresses.
          * <p/>
@@ -62,13 +61,12 @@ public class SyncProducer {
                     "TagA" /* Tag */,
                     ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
                 );
+                msg.setDelayTimeLevel(3);
 
                 /*
                  * Call send message to deliver message to one of brokers.
                  */
                 SendResult sendResult = producer.send(msg);
-
-                //Thread.sleep(1000);
 
                 System.out.printf("%s%n", sendResult);
             } catch (Exception e) {

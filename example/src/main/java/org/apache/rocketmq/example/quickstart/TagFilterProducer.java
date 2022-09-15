@@ -25,14 +25,13 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 /**
  * This class demonstrates how to send messages to brokers using provided {@link DefaultMQProducer}.
  */
-public class SyncProducer {
+public class TagFilterProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
         /*
          * Instantiate with a producer group name.
          */
         DefaultMQProducer producer = new DefaultMQProducer("please_rename_unique_group_name");
-
         producer.setNamesrvAddr("127.0.0.1:9876");
         producer.setSendMsgTimeout(15000);
         /*
@@ -51,15 +50,16 @@ public class SyncProducer {
          * Launch the instance.
          */
         producer.start();
+        String []tags=new String[]{"TagA","TagB","TagC"};
 
-        for (int i = 0; i <10; i++) {
+        for (int i = 0; i <3; i++) {
             try {
 
                 /*
                  * Create a message instance, specifying topic, tag and message body.
                  */
                 Message msg = new Message("TopicTest" /* Topic */,
-                    "TagA" /* Tag */,
+                    tags[i% tags.length] /* Tag */,
                     ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
                 );
 
@@ -67,8 +67,6 @@ public class SyncProducer {
                  * Call send message to deliver message to one of brokers.
                  */
                 SendResult sendResult = producer.send(msg);
-
-                //Thread.sleep(1000);
 
                 System.out.printf("%s%n", sendResult);
             } catch (Exception e) {
@@ -80,6 +78,7 @@ public class SyncProducer {
         /*
          * Shut down once the producer instance is not longer in use.
          */
+        //Thread.sleep(5000);
         producer.shutdown();
     }
 }
